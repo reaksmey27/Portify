@@ -11,6 +11,11 @@ export function useSubscription() {
   const loading = Boolean(userId) && result.userId !== userId
   const subscription = result.userId === userId ? result.subscription : null
   const error = result.userId === userId ? result.error : ''
+  const refreshSubscription = useCallback(() => {
+    if (!userId) return
+    setResult(current => current.userId === userId ? { ...current, userId: null } : current)
+    setRefreshKey(current => current + 1)
+  }, [userId])
 
   useEffect(() => {
     if (!userId) return undefined
@@ -30,13 +35,26 @@ export function useSubscription() {
     return () => { active = false }
   }, [userId, refreshKey])
 
-  const refreshSubscription = useCallback(() => {
-    if (!userId) return
-    setResult(current => current.userId === userId ? { ...current, userId: null } : current)
-    setRefreshKey(current => current + 1)
-  }, [userId])
+  useEffect(() => {
+    let firstRefresh
+    let secondRefresh
+    const handleCheckoutComplete = () => {
+      // Checkout events only trigger a database refresh; the verified webhook remains the source of plan access.
+      firstRefresh = window.setTimeout(() => {
+        refreshSubscription()
+        secondRefresh = window.setTimeout(refreshSubscription, 4000)
+      }, 1500)
+    }
+    window.addEventListener('portify:checkout-completed', handleCheckoutComplete)
+    return () => {
+      window.removeEventListener('portify:checkout-completed', handleCheckoutComplete)
+      window.clearTimeout(firstRefresh)
+      window.clearTimeout(secondRefresh)
+    }
+  }, [refreshSubscription])
 
-  const plan = getPlan(subscription?.status === 'active' ? subscription.plan : 'free')
+  const hasProAccess = subscription?.plan === 'pro' && ['active', 'past_due'].includes(subscription.status)
+  const plan = getPlan(hasProAccess ? 'pro' : 'free')
 
   return {
     subscription,
@@ -44,6 +62,6 @@ export function useSubscription() {
     loading,
     error,
     refreshSubscription,
-    isPro: subscription?.plan === 'pro' && subscription?.status === 'active',
+    isPro: hasProAccess,
   }
 }
