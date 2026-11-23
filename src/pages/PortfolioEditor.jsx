@@ -10,6 +10,7 @@ import { templates } from '../data/templates'
 import { uploadAvatar, uploadProjectImage } from '../services/uploadService'
 import { notify } from '../utils/notifications'
 import { validatePortfolio } from '../utils/validation'
+import { createNotification } from '../services/notificationService'
 
 const emptyForm = {
   title: '', role: '', name: '', email: '', location: '', website: '', bio: '',
@@ -176,6 +177,19 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
     }
     try {
       await savePortfolio(portfolio.id, { title: form.title.trim(), template_id: selectedTemplate, content, status })
+      if (status === 'published') {
+        try {
+          await createNotification({
+            user_id: user.id,
+            portfolio_id: portfolio.id,
+            type: 'portfolio_published',
+            title: 'Portfolio published',
+            message: `Your portfolio "${form.title.trim()}" is now published.`,
+          })
+        } catch {
+          notify.error('Your portfolio was published, but its notification could not be saved.')
+        }
+      }
       const successMessage = status === 'published' ? 'Your portfolio is now published.' : 'Your portfolio is now unpublished.'
       setMessage(successMessage)
       notify.success(successMessage)

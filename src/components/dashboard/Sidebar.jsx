@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, LayoutDashboard, LogOut, TrendingUp, UserRound } from 'lucide-react'
+import { Bell, BriefcaseBusiness, LayoutDashboard, LogOut, TrendingUp, UserRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth'
@@ -25,6 +25,7 @@ export default function Sidebar() {
         <NavLink to="/dashboard" end onClick={closeDrawer}><LayoutDashboard size={17} /> Overview</NavLink>
         <a href="/dashboard#portfolios" onClick={closeDrawer}><BriefcaseBusiness size={17} /> My portfolios</a>
         <NavLink to="/dashboard/analytics" onClick={closeDrawer}><TrendingUp size={17} /> Analytics</NavLink>
+        <NavLink to="/dashboard/notifications" onClick={closeDrawer}><Bell size={17} /> Notifications</NavLink>
         <NavLink to="/dashboard/settings" onClick={closeDrawer}><UserRound size={17} /> Account settings</NavLink>
       </nav>
       <div className="sidebar-bottom"><div className="sidebar-user"><span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span><span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>

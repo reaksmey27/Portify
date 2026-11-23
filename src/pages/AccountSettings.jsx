@@ -5,6 +5,7 @@ import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
 import { useAuth } from '../context/useAuth'
 import { getMyProfile, updateMyEmail, updateMyPassword, updateMyProfile } from '../services/profileService'
+import { createNotification } from '../services/notificationService'
 import { notify } from '../utils/notifications'
 
 const emptyProfile = { full_name: '', bio: '', website: '', location: '', avatar_url: '' }
@@ -48,6 +49,16 @@ export default function AccountSettings() {
     try {
       const saved = await updateMyProfile(user.id, profile)
       setProfile({ ...emptyProfile, ...saved })
+      try {
+        await createNotification({
+          user_id: user.id,
+          type: 'profile_updated',
+          title: 'Profile updated',
+          message: 'Your account profile was updated successfully.',
+        })
+      } catch {
+        notify.error('Your profile was saved, but its notification could not be saved.')
+      }
       notify.success('Profile updated successfully.')
     } catch (error) {
       notify.error(error.message || 'Could not save your profile.')
