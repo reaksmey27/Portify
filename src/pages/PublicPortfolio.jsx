@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link, useParams } from 'react-router-dom'
 import PortfolioTemplate from '../components/portfolio/PortfolioTemplate'
+import { recordPortfolioView } from '../services/analyticsService'
 import { getPublicPortfolio } from '../services/publicPortfolioService'
+import { getVisitorId } from '../utils/visitorId'
 
 export default function PublicPortfolio() {
   const { slug } = useParams()
@@ -14,8 +16,16 @@ export default function PublicPortfolio() {
   useEffect(() => {
     let active = true
     getPublicPortfolio(slug)
-      .then(data => {
-        if (active) setResult({ slug, portfolio: data, error: '' })
+      .then(async data => {
+        if (!active) return
+        setResult({ slug, portfolio: data, error: '' })
+        if (data) {
+          try {
+            await recordPortfolioView(data.id, getVisitorId())
+          } catch (trackingError) {
+            console.error('Analytics tracking failed:', trackingError)
+          }
+        }
       })
       .catch(() => {
         if (active) setResult({ slug, portfolio: null, error: 'We couldn’t load this portfolio.' })
