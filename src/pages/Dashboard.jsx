@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { BriefcaseBusiness, FileText, Globe, Plus, Sparkles } from 'lucide-react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import PortfolioCard from '../components/dashboard/PortfolioCard'
 import Sidebar from '../components/dashboard/Sidebar'
 import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
+import { useSubscription } from '../hooks/useSubscription'
 import { notify } from '../utils/notifications'
+import { canCreatePortfolio, getPortfolioLimitMessage } from '../utils/planLimits'
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth()
   const { portfolios, loading, error, addPortfolio, removePortfolio } = usePortfolios()
+  const { plan, loading: planLoading } = useSubscription()
+  const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState('')
@@ -22,6 +26,16 @@ export default function Dashboard() {
 
   async function handleCreate(event) {
     event.preventDefault()
+    if (planLoading) {
+      notify.info('Checking your plan. Please try again in a moment.')
+      return
+    }
+    if (!canCreatePortfolio(portfolios.length, plan)) {
+      notify.error(getPortfolioLimitMessage(plan))
+      setShowModal(false)
+      navigate('/pricing')
+      return
+    }
     if (!title.trim()) {
       setFormError('Please enter a portfolio name.')
       notify.error('Please enter a portfolio name.')
