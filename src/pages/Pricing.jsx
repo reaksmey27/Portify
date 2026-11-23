@@ -4,8 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { plans } from '../data/plans'
 import { useAuth } from '../context/useAuth'
 import { useSubscription } from '../hooks/useSubscription'
-import { supabase } from '../lib/supabase'
-import { getPaddle } from '../lib/paddle'
+import { startProCheckout } from '../services/billingService'
 import { notify } from '../utils/notifications'
 
 export default function Pricing() {
@@ -21,24 +20,9 @@ export default function Pricing() {
       navigate('/login')
       return
     }
-    if (!supabase) {
-      notify.error('Supabase is not configured.')
-      return
-    }
-
     setCheckoutLoading(true)
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('create-paddle-checkout', {
-        body: { billingInterval },
-      })
-      if (functionError) throw functionError
-      if (!data?.transactionId) throw new Error(data?.error || 'Could not create a checkout transaction.')
-      const paddle = await getPaddle({
-        eventCallback: event => {
-          if (event.name === 'checkout.completed') window.dispatchEvent(new Event('portify:checkout-completed'))
-        },
-      })
-      paddle.Checkout.open({ transactionId: data.transactionId })
+      await startProCheckout(billingInterval)
     } catch (checkoutError) {
       notify.error(checkoutError.message || 'Could not open checkout. Please try again.')
     } finally {

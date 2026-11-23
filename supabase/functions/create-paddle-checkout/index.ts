@@ -24,6 +24,10 @@ Deno.serve(async request => {
     const paddleApiKey = Deno.env.get('PADDLE_API_KEY')
     const monthlyPriceId = Deno.env.get('PADDLE_MONTHLY_PRICE_ID')
     const yearlyPriceId = Deno.env.get('PADDLE_YEARLY_PRICE_ID')
+    const paddleEnvironment = Deno.env.get('PADDLE_ENVIRONMENT') || 'sandbox'
+    if (!['sandbox', 'live'].includes(paddleEnvironment)) {
+      return response({ error: 'Paddle environment must be sandbox or live.' }, 503)
+    }
     if (!supabaseUrl || !supabaseAnonKey || !paddleApiKey || !monthlyPriceId || !yearlyPriceId) {
       console.error('Checkout function is missing required server configuration.')
       return response({ error: 'Checkout is not configured yet. Please try again later.' }, 503)
@@ -52,7 +56,8 @@ Deno.serve(async request => {
     }
 
     const priceId = billingInterval === 'month' ? monthlyPriceId : yearlyPriceId
-    const paddleResponse = await fetch('https://api.paddle.com/transactions', {
+    const paddleApiBase = paddleEnvironment === 'live' ? 'https://api.paddle.com' : 'https://sandbox-api.paddle.com'
+    const paddleResponse = await fetch(`${paddleApiBase}/transactions`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${paddleApiKey}`,

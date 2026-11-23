@@ -8,7 +8,8 @@ export async function getPaddle(options = {}) {
   const token = import.meta.env.VITE_PADDLE_CLIENT_TOKEN
   if (!token) throw new Error('Paddle client token is missing. Add it to your .env file.')
 
-  paddleInstance = await initializePaddle({ environment: 'sandbox', token, ...options })
+  const environment = import.meta.env.VITE_PADDLE_ENVIRONMENT === 'live' ? 'production' : 'sandbox'
+  paddleInstance = await initializePaddle({ environment, token, ...options })
   if (!paddleInstance) throw new Error('Could not initialize Paddle.')
   return paddleInstance
 }

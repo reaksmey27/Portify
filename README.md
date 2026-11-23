@@ -18,10 +18,10 @@ If you are developing a production application, we recommend using TypeScript wi
 ## Paddle sandbox setup
 
 1. Create the Portify Pro monthly ($8) and yearly ($80) prices in Paddle Sandbox.
-2. Put the sandbox client token and both price IDs in `.env` using the `VITE_PADDLE_*` names from `.env.example`, then restart Vite.
+2. Put the sandbox client token, `VITE_PADDLE_ENVIRONMENT=sandbox`, and both price IDs in `.env` using the `VITE_PADDLE_*` names from `.env.example`, then restart Vite.
 3. Apply the latest SQL migration in `supabase/migrations`.
-4. Set Edge Function secrets in Supabase: `PADDLE_API_KEY`, `PADDLE_MONTHLY_PRICE_ID`, `PADDLE_YEARLY_PRICE_ID`, and `PADDLE_WEBHOOK_SECRET`. Keep private API and webhook secrets out of `.env` and browser code.
+4. Set Edge Function secrets in Supabase: `PADDLE_API_KEY`, `PADDLE_MONTHLY_PRICE_ID`, `PADDLE_YEARLY_PRICE_ID`, `PADDLE_ENVIRONMENT=sandbox`, and `PADDLE_WEBHOOK_SECRET`. Keep private API and webhook secrets out of `.env` and browser code.
 5. Deploy `create-paddle-checkout` with JWT verification enabled. Deploy `paddle-webhook` with JWT verification disabled; signature verification is performed inside the function.
-6. In Paddle Sandbox, create a notification destination pointing to `https://<project-ref>.supabase.co/functions/v1/paddle-webhook`. Subscribe to `subscription.created`, `subscription.updated`, `subscription.activated`, `subscription.trialing`, `subscription.past_due`, and `subscription.canceled` events. Add the destination's secret as `PADDLE_WEBHOOK_SECRET`.
+6. In Paddle Sandbox, create a notification destination pointing to `https://<project-ref>.supabase.co/functions/v1/paddle-webhook`. Subscribe to `subscription.created`, `subscription.updated`, `subscription.activated`, `subscription.trialing`, `subscription.past_due`, `subscription.paused`, and `subscription.canceled` events. Add the destination's secret as `PADDLE_WEBHOOK_SECRET`.
 
-Checkout runs in sandbox mode. Pro access is updated only by verified Paddle subscription webhooks.
+Checkout runs in sandbox mode. Pro access is updated only by verified Paddle subscription webhooks. Webhook event IDs are recorded in the same database transaction as subscription changes, so Paddle retries are safe to process.
