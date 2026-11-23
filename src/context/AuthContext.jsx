@@ -25,11 +25,11 @@ export function AuthProvider({ children }) {
     user: session?.user ?? null,
     loading,
     signIn: async (email, password) => {
-      if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to the .env file first.')
+      if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) to the environment first.')
       return supabase.auth.signInWithPassword({ email, password })
     },
     signUp: async (email, password) => {
-      if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to the .env file first.')
+      if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) to the environment first.')
       return supabase.auth.signUp({ email, password })
     },
     signOut: async () => supabase?.auth.signOut(),

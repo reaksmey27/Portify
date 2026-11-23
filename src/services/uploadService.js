@@ -12,7 +12,7 @@ function validateImage(file) {
 async function uploadImage(file, bucket, userId, folder) {
   validateImage(file)
   if (!userId) throw new Error('You must be signed in to upload images.')
-  if (!supabase) throw new Error('Supabase is not configured. Check your VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.')
+  if (!supabase) throw new Error('Supabase is not configured. Check VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY).')
 
   const extension = file.name.split('.').pop()?.toLowerCase() || 'image'
   const filePath = `${userId}/${folder}/${crypto.randomUUID()}.${extension}`
