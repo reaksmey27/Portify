@@ -6,6 +6,7 @@ import PortfolioCard from '../components/dashboard/PortfolioCard'
 import Sidebar from '../components/dashboard/Sidebar'
 import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
+import { notify } from '../utils/notifications'
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth()
@@ -23,6 +24,7 @@ export default function Dashboard() {
     event.preventDefault()
     if (!title.trim()) {
       setFormError('Please enter a portfolio name.')
+      notify.error('Please enter a portfolio name.')
       return
     }
     setCreating(true)
@@ -33,8 +35,10 @@ export default function Dashboard() {
       setCategory('')
       setDescription('')
       setShowModal(false)
+      notify.success('Portfolio created successfully.')
     } catch (err) {
       setFormError(err.message || 'Could not create portfolio.')
+      notify.error(err.message || 'Could not create portfolio.')
     } finally {
       setCreating(false)
     }
@@ -45,8 +49,9 @@ export default function Dashboard() {
     setDeletingId(portfolio.id)
     try {
       await removePortfolio(portfolio.id)
+      notify.success('Portfolio deleted.')
     } catch (err) {
-      window.alert(err.message || 'Could not delete portfolio.')
+      notify.error(err.message || 'Could not delete portfolio.')
     } finally {
       setDeletingId(null)
     }
@@ -76,7 +81,7 @@ export default function Dashboard() {
             <div className="dashboard-section-heading"><div><div className="eyebrow">YOUR WORK, ALL IN ONE PLACE</div><h2>My portfolios</h2></div><span>{portfolios.length} total</span></div>
             {error && <div className="dashboard-error" role="alert">{error}</div>}
             {loading ? <div className="dashboard-empty">Loading portfolios…</div> : portfolios.length === 0 ? (
-              <div className="dashboard-empty dashboard-empty-state"><div className="empty-icon"><BriefcaseBusiness size={24} /></div><h3>No portfolios yet</h3><p>Create your first portfolio and start building your professional online presence.</p><button className="button button-dark" onClick={() => { setFormError(''); setShowModal(true) }}><Plus size={16} /> Create your first portfolio</button></div>
+              <div className="dashboard-empty dashboard-empty-state"><div className="empty-icon"><BriefcaseBusiness size={24} /></div><h3>Your portfolio journey starts here</h3><p>Create your first portfolio, choose a design, and publish your personal website.</p><button className="button button-dark" onClick={() => { setFormError(''); setShowModal(true) }}><Plus size={16} /> Create your first portfolio</button></div>
             ) : (
               <div className="dashboard-card-grid">{portfolios.map(portfolio => <div className="dashboard-card-wrap" key={portfolio.id}><PortfolioCard portfolio={portfolio} onDelete={handleDelete} deleting={deletingId === portfolio.id} />{deletingId === portfolio.id && <div className="deleting-overlay">Deleting portfolio…</div>}</div>)}</div>
             )}

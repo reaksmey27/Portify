@@ -8,6 +8,8 @@ import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
 import { templates } from '../data/templates'
 import { uploadAvatar, uploadProjectImage } from '../services/uploadService'
+import { notify } from '../utils/notifications'
+import { validatePortfolio } from '../utils/validation'
 
 const emptyForm = {
   title: '', role: '', name: '', email: '', location: '', website: '', bio: '',
@@ -76,8 +78,10 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
       const url = await uploadAvatar(file, user.id)
       setForm(current => ({ ...current, avatar: url }))
       setMessage('Profile photo uploaded. Save your changes to keep it.')
+      notify.success('Profile photo uploaded. Save your changes to keep it.')
     } catch (err) {
       setMessage(err.message || 'Image upload failed.')
+      notify.error(err.message || 'Image upload failed.')
     } finally {
       setUploading(false)
       event.target.value = ''
@@ -96,8 +100,10 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
         projects: current.projects.map((project, projectIndex) => projectIndex === index ? { ...project, image: url } : project),
       }))
       setMessage('Project image uploaded. Save your changes to keep it.')
+      notify.success('Project image uploaded. Save your changes to keep it.')
     } catch (err) {
       setMessage(err.message || 'Project image upload failed.')
+      notify.error(err.message || 'Project image upload failed.')
     } finally {
       setUploading(false)
       event.target.value = ''
@@ -106,8 +112,11 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
 
   async function handleSave(event) {
     event.preventDefault()
-    if (!form.title.trim()) {
-      setMessage('Please enter a portfolio title.')
+    const validationErrors = validatePortfolio(form)
+    if (Object.keys(validationErrors).length > 0) {
+      const firstError = Object.values(validationErrors)[0]
+      setMessage(firstError)
+      notify.error(firstError)
       return
     }
     setSaving(true)
@@ -130,14 +139,23 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
     try {
       await savePortfolio(portfolio.id, { title: form.title.trim(), template_id: selectedTemplate, content })
       setMessage('Portfolio saved successfully.')
+      notify.success('Portfolio saved successfully.')
     } catch (err) {
       setMessage(err.message || 'Failed to save portfolio.')
+      notify.error(err.message || 'Failed to save portfolio.')
     } finally {
       setSaving(false)
     }
   }
 
   async function handlePublish() {
+    const validationErrors = validatePortfolio(form)
+    if (Object.keys(validationErrors).length > 0) {
+      const firstError = Object.values(validationErrors)[0]
+      setMessage(firstError)
+      notify.error(firstError)
+      return
+    }
     const status = portfolio.status === 'published' ? 'draft' : 'published'
     setSaving(true)
     setMessage('')
@@ -158,9 +176,12 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
     }
     try {
       await savePortfolio(portfolio.id, { title: form.title.trim(), template_id: selectedTemplate, content, status })
-      setMessage(status === 'published' ? 'Your portfolio is now published.' : 'Your portfolio is now unpublished.')
+      const successMessage = status === 'published' ? 'Your portfolio is now published.' : 'Your portfolio is now unpublished.'
+      setMessage(successMessage)
+      notify.success(successMessage)
     } catch (err) {
       setMessage(err.message || 'Could not update publishing status.')
+      notify.error(err.message || 'Could not update publishing status.')
     } finally {
       setSaving(false)
     }
@@ -171,8 +192,10 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
     try {
       await navigator.clipboard.writeText(url)
       setMessage('Portfolio link copied.')
+      notify.success('Portfolio link copied.')
     } catch {
       setMessage(`Copy this link: ${url}`)
+      notify.info(`Copy this link: ${url}`)
     }
   }
 
@@ -201,8 +224,8 @@ function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) 
                 <div className="editor-field-grid">
                   <Field label="Portfolio title" wide><input className="editor-input" required value={form.title} onChange={event => updateField('title', event.target.value)} placeholder="My portfolio" /></Field>
                   <div className="editor-field editor-field-wide"><span>Profile photo</span><div className="avatar-upload-row">{form.avatar ? <img className="avatar-upload-preview" src={form.avatar} alt={form.name || 'Profile'} /> : <span className="avatar-upload-placeholder"><Camera size={23} /></span>}<label className="upload-file-button">{uploading ? 'Uploading…' : 'Upload photo'}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarUpload} disabled={uploading} /></label><small>JPG, PNG, or WebP. Maximum 5 MB.</small></div></div>
-                  <Field label="Your name"><input className="editor-input" value={form.name} onChange={event => updateField('name', event.target.value)} placeholder="Your name" /></Field>
-                  <Field label="Professional role"><input className="editor-input" value={form.role} onChange={event => updateField('role', event.target.value)} placeholder="Product designer" /></Field>
+                  <Field label="Your name"><input className="editor-input" required value={form.name} onChange={event => updateField('name', event.target.value)} placeholder="Your name" /></Field>
+                  <Field label="Professional role"><input className="editor-input" required value={form.role} onChange={event => updateField('role', event.target.value)} placeholder="Product designer" /></Field>
                   <Field label="Email"><input type="email" className="editor-input" value={form.email} onChange={event => updateField('email', event.target.value)} placeholder="you@example.com" /></Field>
                   <Field label="Location"><input className="editor-input" value={form.location} onChange={event => updateField('location', event.target.value)} placeholder="Phnom Penh, Cambodia" /></Field>
                   <Field label="Website" wide><input type="url" className="editor-input" value={form.website} onChange={event => updateField('website', event.target.value)} placeholder="https://yourwebsite.com" /></Field>
