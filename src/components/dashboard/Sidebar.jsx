@@ -1,6 +1,6 @@
 import { ArrowUpRight, BriefcaseBusiness, LayoutDashboard, LogOut, Settings, UserRound } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth } from '../../context/useAuth'
 
 export default function Sidebar() {
   const { user, signOut } = useAuth()

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import {
   createPortfolio,
   deletePortfolio,
@@ -7,45 +7,40 @@ import {
   updatePortfolio,
 } from '../services/portfolioService'
 
+const emptySnapshot = { userId: null, portfolios: [], error: '' }
+
 export function usePortfolios() {
   const { user } = useAuth()
   const userId = user?.id
-  const [portfolios, setPortfolios] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  const fetchPortfolios = useCallback(async () => {
-    if (!userId) {
-      setPortfolios([])
-      setLoading(false)
-      setError('')
-      return
-    }
-
-    setLoading(true)
-    setError('')
-    try {
-      setPortfolios(await getPortfolios())
-    } catch (err) {
-      setError(err.message || 'Failed to load portfolios.')
-    } finally {
-      setLoading(false)
-    }
-  }, [userId])
+  const [snapshot, setSnapshot] = useState(emptySnapshot)
+  const [refreshKey, setRefreshKey] = useState(0)
+  const loading = Boolean(userId) && snapshot.userId !== userId
+  const portfolios = snapshot.userId === userId ? snapshot.portfolios : []
+  const error = snapshot.userId === userId ? snapshot.error : ''
 
   useEffect(() => {
-    fetchPortfolios()
-  }, [fetchPortfolios])
+    if (!userId) return undefined
+    let cancelled = false
+    getPortfolios()
+      .then(data => {
+        if (!cancelled) setSnapshot({ userId, portfolios: data, error: '' })
+      })
+      .catch(err => {
+        if (!cancelled) setSnapshot({ userId, portfolios: [], error: err.message || 'Failed to load portfolios.' })
+      })
+    return () => { cancelled = true }
+  }, [userId, refreshKey])
 
   const addPortfolio = async (portfolioData) => {
     if (!userId) throw new Error('You must be signed in to create a portfolio.')
     try {
       const portfolio = await createPortfolio({ ...portfolioData, userId })
-      setPortfolios(current => [portfolio, ...current])
-      setError('')
+      setSnapshot(current => current.userId === userId
+        ? { ...current, portfolios: [portfolio, ...current.portfolios], error: '' }
+        : current)
       return portfolio
     } catch (err) {
-      setError(err.message || 'Failed to create portfolio.')
+      setSnapshot(current => current.userId === userId ? { ...current, error: err.message || 'Failed to create portfolio.' } : current)
       throw err
     }
   }
@@ -53,11 +48,12 @@ export function usePortfolios() {
   const editPortfolio = async (id, updates) => {
     try {
       const portfolio = await updatePortfolio(id, updates)
-      setPortfolios(current => current.map(item => item.id === id ? portfolio : item))
-      setError('')
+      setSnapshot(current => current.userId === userId
+        ? { ...current, portfolios: current.portfolios.map(item => item.id === id ? portfolio : item), error: '' }
+        : current)
       return portfolio
     } catch (err) {
-      setError(err.message || 'Failed to update portfolio.')
+      setSnapshot(current => current.userId === userId ? { ...current, error: err.message || 'Failed to update portfolio.' } : current)
       throw err
     }
   }
@@ -65,21 +61,20 @@ export function usePortfolios() {
   const removePortfolio = async (id) => {
     try {
       await deletePortfolio(id)
-      setPortfolios(current => current.filter(item => item.id !== id))
-      setError('')
+      setSnapshot(current => current.userId === userId
+        ? { ...current, portfolios: current.portfolios.filter(item => item.id !== id), error: '' }
+        : current)
     } catch (err) {
-      setError(err.message || 'Failed to delete portfolio.')
+      setSnapshot(current => current.userId === userId ? { ...current, error: err.message || 'Failed to delete portfolio.' } : current)
       throw err
     }
   }
 
-  return {
-    portfolios,
-    loading,
-    error,
-    addPortfolio,
-    editPortfolio,
-    removePortfolio,
-    refreshPortfolios: fetchPortfolios,
-  }
+  const refreshPortfolios = useCallback(() => {
+    if (!userId) return
+    setSnapshot(current => current.userId === userId ? { ...current, userId: null } : current)
+    setRefreshKey(current => current + 1)
+  }, [userId])
+
+  return { portfolios, loading, error, addPortfolio, editPortfolio, removePortfolio, refreshPortfolios }
 }

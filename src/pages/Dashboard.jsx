@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import PortfolioCard from '../components/dashboard/PortfolioCard'
 import Sidebar from '../components/dashboard/Sidebar'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
 
 export default function Dashboard() {
