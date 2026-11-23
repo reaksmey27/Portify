@@ -51,6 +51,7 @@ export default function AccountSettings() {
     try {
       const saved = await updateMyProfile(user.id, profile)
       setProfile({ ...emptyProfile, ...saved })
+      window.dispatchEvent(new Event('portify:profile-changed'))
       try {
         await createNotification({
           user_id: user.id,
