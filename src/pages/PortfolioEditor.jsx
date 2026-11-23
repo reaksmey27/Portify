@@ -3,8 +3,10 @@ import { ArrowLeft, Eye, Plus, Save, Trash2 } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
+import PortfolioTemplate from '../components/portfolio/PortfolioTemplate'
 import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
+import { templates } from '../data/templates'
 
 const emptyForm = {
   title: '', role: '', name: '', email: '', location: '', website: '', bio: '',
@@ -36,6 +38,7 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
     experience: Array.isArray(content.experience) ? content.experience : [],
   }))
   const [skillsText, setSkillsText] = useState(() => Array.isArray(content.skills) ? content.skills.join(', ') : '')
+  const [selectedTemplate, setSelectedTemplate] = useState(portfolio.template_id || 'minimal')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -80,7 +83,7 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
       experience: form.experience,
     }
     try {
-      await savePortfolio(portfolio.id, { title: form.title.trim(), content })
+      await savePortfolio(portfolio.id, { title: form.title.trim(), template_id: selectedTemplate, content })
       setMessage('Portfolio saved successfully.')
     } catch (err) {
       setMessage(err.message || 'Failed to save portfolio.')
@@ -104,6 +107,11 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
         <form id="portfolio-editor-form" onSubmit={handleSave}>
           <div className="editor-columns">
             <div className="editor-fields">
+              <section className="editor-panel">
+                <div className="editor-panel-heading"><div><span className="editor-step">00</span><div><h3>Choose a template</h3><p>Pick a design for your portfolio preview.</p></div></div></div>
+                <div className="template-choice-grid">{templates.map(template => <button type="button" key={template.id} onClick={() => { setSelectedTemplate(template.id); setMessage('') }} className={`template-choice ${selectedTemplate === template.id ? 'template-choice-selected' : ''}`} aria-pressed={selectedTemplate === template.id}><div className={`template-choice-art template-choice-${template.id}`}><span /><i /><b /></div><strong>{template.name}</strong><small>{template.category}</small><p>{template.description}</p>{selectedTemplate === template.id && <em>Selected</em>}</button>)}</div>
+              </section>
+
               <section className="editor-panel">
                 <div className="editor-panel-heading"><div><span className="editor-step">01</span><div><h3>Personal information</h3><p>Introduce yourself in your own words.</p></div></div></div>
                 <div className="editor-field-grid">
@@ -137,16 +145,8 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
             </div>
 
             <aside className="editor-preview-panel">
-              <div className="preview-heading"><div><span><Eye size={15} /></span><div><h3>Live preview</h3><p>Changes appear as you type.</p></div></div><span className="preview-badge">PREVIEW</span></div>
-              <div className="portfolio-live-preview">
-                <div className="preview-cover"><span>{(form.name || form.title || 'P').slice(0, 1).toUpperCase()}</span><i /></div>
-                <div className="preview-person"><span className="preview-role">{form.role || 'YOUR PROFESSIONAL ROLE'}</span><h2>{form.name || 'Your name'}</h2>{form.location && <p className="preview-location">{form.location}</p>}<p className="preview-bio">{form.bio || 'Your introduction will appear here. Share a little about what you do and what makes your work yours.'}</p>{form.website && <a className="preview-website" href={form.website} target="_blank" rel="noreferrer">{form.website.replace(/^https?:\/\//, '')}</a>}</div>
-                <section className="preview-section"><h3>Skills</h3>{skills.length ? <div className="preview-skills">{skills.map((skill, index) => <span key={`${skill}-${index}`}>{skill}</span>)}</div> : <p className="preview-placeholder">Your skills will appear here.</p>}</section>
-                <section className="preview-section"><h3>Selected projects <span>{form.projects.filter(project => project.title).length.toString().padStart(2, '0')}</span></h3>{form.projects.filter(project => project.title).length ? form.projects.filter(project => project.title).map((project, index) => <article className="preview-project" key={`preview-project-${index}`}><span className="preview-project-number">0{index + 1}</span><div><h4>{project.title}</h4><p>{project.description || 'A little more about this project.'}</p></div></article>) : <p className="preview-placeholder">Your projects will appear here.</p>}</section>
-                <section className="preview-section"><h3>Experience</h3>{form.experience.filter(item => item.position).length ? form.experience.filter(item => item.position).map((item, index) => <article className="preview-experience" key={`preview-experience-${index}`}><div><h4>{item.position}</h4><p>{item.company}</p></div><span>{item.duration}</span></article>) : <p className="preview-placeholder">Your experience will appear here.</p>}</section>
-                {form.email && <div className="preview-contact">Let’s talk <a href={`mailto:${form.email}`}>{form.email}</a></div>}
-                <div className="preview-footer">MADE WITH PORTIFY <span>✳</span></div>
-              </div>
+              <div className="preview-heading"><div><span><Eye size={15} /></span><div><h3>Live preview</h3><p>Changes appear as you type.</p></div></div><span className="preview-badge">{selectedTemplate} template</span></div>
+              <div className="portfolio-template-frame"><PortfolioTemplate templateId={selectedTemplate} portfolio={{ ...portfolio, title: form.title, content: { ...form, skills } }} /></div>
             </aside>
           </div>
           <div className="editor-bottom-save"><span>Remember to save your changes.</span><button type="submit" className="button button-dark" disabled={saving}><Save size={15} />{saving ? 'Saving…' : 'Save changes'}</button></div>
