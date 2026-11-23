@@ -76,6 +76,7 @@
 .social-auth-button:hover{background:#f8f7f3;border-color:#c8c3b7}
 .social-auth-button:disabled{opacity:.6;cursor:wait}
 .social-auth-google-mark{width:16px;height:16px}
+.social-auth-github-mark{width:17px;height:17px}
 .social-auth-divider{display:flex;align-items:center;gap:12px;margin-top:17px;color:#8b8980;font-size:9px}
 .social-auth-divider::before,.social-auth-divider::after{content:'';height:1px;flex:1;background:#e9e6de}
 .site-header+main:not(.auth-page):not(.dashboard-main){padding-top:82px}
