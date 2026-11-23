@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { KeyRound, Mail, Save, UserRound } from 'lucide-react'
+import { Camera, KeyRound, Mail, Save, UserRound } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
 import { useAuth } from '../context/useAuth'
 import { getMyProfile, updateMyEmail, updateMyPassword, updateMyProfile } from '../services/profileService'
 import { createNotification } from '../services/notificationService'
+import { uploadAvatar } from '../services/uploadService'
 import { notify } from '../utils/notifications'
 
 const emptyProfile = { full_name: '', bio: '', website: '', location: '', avatar_url: '' }
@@ -17,6 +18,7 @@ export default function AccountSettings() {
   const [password, setPassword] = useState('')
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [savingProfile, setSavingProfile] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [savingEmail, setSavingEmail] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
 
@@ -106,6 +108,22 @@ export default function AccountSettings() {
     setProfile(current => ({ ...current, [field]: value }))
   }
 
+  async function handleAvatarUpload(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+    setUploadingAvatar(true)
+    try {
+      const avatarUrl = await uploadAvatar(file, user.id)
+      setProfile(current => ({ ...current, avatar_url: avatarUrl }))
+      notify.success('Photo uploaded. Save your profile to keep it.')
+    } catch (error) {
+      notify.error(error.message || 'Could not upload your photo.')
+    } finally {
+      setUploadingAvatar(false)
+      event.target.value = ''
+    }
+  }
+
   return <div className="dashboard-layout">
     <Sidebar />
     <div className="dashboard-content">
@@ -119,7 +137,7 @@ export default function AccountSettings() {
             <label className="account-settings-field">Full name<input className="editor-input" autoComplete="name" value={profile.full_name} onChange={event => updateField('full_name', event.target.value)} placeholder="Your name" /></label>
             <label className="account-settings-field">Location<input className="editor-input" autoComplete="address-level2" value={profile.location} onChange={event => updateField('location', event.target.value)} placeholder="Phnom Penh, Cambodia" /></label>
             <label className="account-settings-field account-settings-field-wide">Website<input className="editor-input" type="url" autoComplete="url" value={profile.website} onChange={event => updateField('website', event.target.value)} placeholder="https://example.com" /></label>
-            <label className="account-settings-field account-settings-field-wide">Avatar URL<input className="editor-input" type="url" value={profile.avatar_url} onChange={event => updateField('avatar_url', event.target.value)} placeholder="https://example.com/avatar.jpg" /></label>
+            <div className="account-settings-field account-settings-field-wide"><span>Profile photo</span><div className="avatar-upload-row">{profile.avatar_url ? <img className="avatar-upload-preview" src={profile.avatar_url} alt={profile.full_name || 'Profile'} /> : <span className="avatar-upload-placeholder"><Camera size={23} /></span>}<label className="upload-file-button">{uploadingAvatar ? 'Uploading…' : 'Upload photo'}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleAvatarUpload} disabled={uploadingAvatar} /></label><small>JPG, PNG, or WebP. Maximum 5 MB. Save your profile after upload.</small></div><input className="editor-input" type="url" aria-label="Avatar URL" value={profile.avatar_url} onChange={event => updateField('avatar_url', event.target.value)} placeholder="Or paste an image URL" /></div>
             <label className="account-settings-field account-settings-field-wide">Bio<textarea className="editor-input" rows={4} value={profile.bio} onChange={event => updateField('bio', event.target.value)} placeholder="A few words about you and your work…" /></label>
           </div>}
           <div className="account-settings-actions"><button className="button button-dark" disabled={loadingProfile || savingProfile}><Save size={15} />{savingProfile ? 'Saving…' : 'Save profile'}</button></div>
