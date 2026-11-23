@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 
-const questions = [{ question: 'Do I need to know how to code?', answer: 'Not at all. Portify is made for creatives, not developers. Pick a template, add your work, and publish when you’re ready.' }, { question: 'Can I use my own domain?', answer: 'Yes. Connect a domain you already own on Plus or Studio, or start with your free Portify address.' }, { question: 'Can I change my template later?', answer: 'Absolutely. Your projects stay yours, so you can explore a new look whenever inspiration strikes.' }, { question: 'What happens if I cancel?', answer: 'Your portfolio stays available through the end of your billing period. You can export your content at any time.' }]
+const questions = [{ question: 'Do I need to know how to code?', answer: 'Not at all. Portify is made for creatives, not developers. Pick a template, add your work, and publish when you’re ready.' }, { question: 'Is Portify really free?', answer: 'Yes. Every feature is available to every user, with no payment or subscription required.' }, { question: 'Can I change my template later?', answer: 'Absolutely. Your projects stay yours, so you can explore a new look whenever inspiration strikes.' }, { question: 'Can I create more than one portfolio?', answer: 'Yes. You can create as many portfolios as you need.' }]
 
 export default function FAQ() {
   const [open, setOpen] = useState(0)

@@ -1,4 +1,4 @@
-import { ArrowUpRight, BriefcaseBusiness, LayoutDashboard, LogOut, Settings, TrendingUp, UserRound } from 'lucide-react'
+import { BriefcaseBusiness, LayoutDashboard, LogOut, Settings, TrendingUp, UserRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth'
@@ -28,7 +28,7 @@ export default function Sidebar() {
         <a href="/dashboard#profile" onClick={closeDrawer}><UserRound size={17} /> Profile</a>
         <a href="/dashboard#settings" onClick={closeDrawer}><Settings size={17} /> Settings</a>
       </nav>
-      <div className="sidebar-bottom"><a className="upgrade-card" href="/pricing" onClick={closeDrawer}><span>Ready for more?</span><small>Explore Portify Pro <ArrowUpRight size={13} /></small></a><div className="sidebar-user"><span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span><span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>
+      <div className="sidebar-bottom"><div className="sidebar-user"><span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span><span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>
     </aside>
   </>
 }

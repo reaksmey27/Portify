@@ -1,18 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowRight, Eye, Globe, RefreshCw, TrendingUp, Users } from 'lucide-react'
+import { Eye, Globe, RefreshCw, TrendingUp, Users } from 'lucide-react'
 import { Navigate } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
 import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
-import { useSubscription } from '../hooks/useSubscription'
 import { getPortfolioAnalytics } from '../services/analyticsService'
 
 export default function Analytics() {
   const { user, loading: authLoading } = useAuth()
   const { portfolios, loading: portfoliosLoading, error: portfoliosError, refreshPortfolios } = usePortfolios()
-  const { isPro, loading: planLoading } = useSubscription()
   const portfolioIds = useMemo(() => portfolios.map(portfolio => portfolio.id), [portfolios])
   const portfolioKey = portfolioIds.join(',')
   const [result, setResult] = useState({ key: null, analytics: null, error: '' })
@@ -22,7 +20,7 @@ export default function Analytics() {
   const error = portfoliosError || (result.key === portfolioKey ? result.error : '')
 
   useEffect(() => {
-    if (portfoliosLoading || planLoading || !isPro) return undefined
+    if (portfoliosLoading) return undefined
     let active = true
     getPortfolioAnalytics(portfolioIds)
       .then(data => {
@@ -32,14 +30,10 @@ export default function Analytics() {
         if (active) setResult({ key: portfolioKey, analytics: null, error: err.message || 'Could not load analytics.' })
       })
     return () => { active = false }
-  }, [portfolioIds, portfolioKey, portfoliosLoading, planLoading, isPro, retryCount])
+  }, [portfolioIds, portfolioKey, portfoliosLoading, retryCount])
 
   if (authLoading) return <div className="auth-loading">Getting your workspace ready…</div>
   if (!user) return <Navigate to="/login" replace />
-  if (planLoading) return <div className="auth-loading">Loading your plan…</div>
-
-  if (!isPro) return <div className="dashboard-layout"><Sidebar /><div className="dashboard-content"><Header title="Analytics" /><main className="dashboard-main analytics-main"><section className="analytics-upgrade-card"><span><TrendingUp size={22} /></span><div className="eyebrow">AVAILABLE WITH PRO</div><h2>Know how your work is doing.</h2><p>Unlock visitor totals, weekly traffic, and your most viewed portfolios with Portify Pro.</p><a className="button button-dark" href="/pricing">Explore Pro <ArrowRight size={15} /></a></section></main></div></div>
-
   const portfolioNames = Object.fromEntries(portfolios.map(portfolio => [portfolio.id, portfolio.title]))
   const publishedCount = portfolios.filter(portfolio => portfolio.status === 'published').length
 

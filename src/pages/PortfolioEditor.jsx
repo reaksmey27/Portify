@@ -6,12 +6,10 @@ import Sidebar from '../components/dashboard/Sidebar'
 import PortfolioTemplate from '../components/portfolio/PortfolioTemplate'
 import { useAuth } from '../context/useAuth'
 import { usePortfolios } from '../hooks/usePortfolios'
-import { useSubscription } from '../hooks/useSubscription'
 import { templates } from '../data/templates'
 import { uploadAvatar, uploadProjectImage } from '../services/uploadService'
 import { notify } from '../utils/notifications'
 import { validatePortfolio } from '../utils/validation'
-import { canUseTemplate } from '../utils/planLimits'
 
 const emptyForm = {
   title: '', role: '', name: '', email: '', location: '', website: '', bio: '',
@@ -24,7 +22,6 @@ export default function PortfolioEditor() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
   const { portfolios, loading, error, editPortfolio } = usePortfolios()
-  const { plan, loading: planLoading } = useSubscription()
   const portfolio = portfolios.find(item => item.id === id)
 
   if (authLoading) return <div className="auth-loading">Getting your workspace ready…</div>
@@ -32,10 +29,10 @@ export default function PortfolioEditor() {
   if (loading) return <div className="auth-loading">Loading portfolio editor…</div>
   if (!portfolio) return <div className="editor-not-found"><h1>Portfolio not found</h1><p>{error || 'It may have been deleted or belong to another account.'}</p><Link className="button button-dark" to="/dashboard">Back to dashboard</Link></div>
 
-  return <PortfolioEditorForm key={portfolio.id} portfolio={portfolio} user={user} plan={plan} planLoading={planLoading} error={error} onBack={() => navigate('/dashboard')} onUpgrade={() => navigate('/pricing')} savePortfolio={editPortfolio} />
+  return <PortfolioEditorForm key={portfolio.id} portfolio={portfolio} user={user} error={error} onBack={() => navigate('/dashboard')} savePortfolio={editPortfolio} />
 }
 
-function PortfolioEditorForm({ portfolio, user, plan, planLoading, error, onBack, onUpgrade, savePortfolio }) {
+function PortfolioEditorForm({ portfolio, user, error, onBack, savePortfolio }) {
   const content = portfolio.content || {}
   const [form, setForm] = useState(() => ({
     ...emptyForm,
@@ -219,7 +216,7 @@ function PortfolioEditorForm({ portfolio, user, plan, planLoading, error, onBack
             <div className="editor-fields">
               <section className="editor-panel">
                 <div className="editor-panel-heading"><div><span className="editor-step">00</span><div><h3>Choose a template</h3><p>Pick a design for your portfolio preview.</p></div></div></div>
-                <div className="template-choice-grid">{templates.map(template => { const allowed = canUseTemplate(template.id, plan); return <button type="button" key={template.id} disabled={planLoading} onClick={() => { if (!allowed) { notify.error('Creative is a Pro template. Upgrade to unlock all templates.'); onUpgrade(); return } setSelectedTemplate(template.id); setMessage('') }} className={`template-choice ${selectedTemplate === template.id ? 'template-choice-selected' : ''} ${!allowed ? 'template-choice-locked' : ''}`} aria-pressed={selectedTemplate === template.id}><div className={`template-choice-art template-choice-${template.id}`}><span /><i /><b /></div><strong>{template.name}{!allowed && <small className="template-pro-tag">PRO</small>}</strong><small>{template.category}</small><p>{template.description}</p>{selectedTemplate === template.id && <em>Selected</em>}</button>})}</div>
+                <div className="template-choice-grid">{templates.map(template => <button type="button" key={template.id} onClick={() => { setSelectedTemplate(template.id); setMessage('') }} className={`template-choice ${selectedTemplate === template.id ? 'template-choice-selected' : ''}`} aria-pressed={selectedTemplate === template.id}><div className={`template-choice-art template-choice-${template.id}`}><span /><i /><b /></div><strong>{template.name}</strong><small>{template.category}</small><p>{template.description}</p>{selectedTemplate === template.id && <em>Selected</em>}</button>)}</div>
               </section>
 
               <section className="editor-panel">

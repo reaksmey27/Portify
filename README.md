@@ -1,27 +1,18 @@
-# React + Vite
+# Portify
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portify is a free portfolio builder for creatives. Every account can create unlimited portfolios, use every template, customize their pages, upload images, publish public links, and view analytics. No subscription or payment is required.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Copy `.env.example` to `.env` and add your Supabase project URL and publishable key.
+2. Install dependencies with `npm install`.
+3. Start the development server with `npm run dev`.
 
-## React Compiler
+## Build checks
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `npm run lint`
+- `npm run build`
 
-## Expanding the ESLint configuration
+## Supabase cleanup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-## Paddle sandbox setup
-
-1. Create the Portify Pro monthly ($8) and yearly ($80) prices in Paddle Sandbox.
-2. Put the sandbox client token, `VITE_PADDLE_ENVIRONMENT=sandbox`, and both price IDs in `.env` using the `VITE_PADDLE_*` names from `.env.example`, then restart Vite.
-3. Apply the latest SQL migration in `supabase/migrations`.
-4. Set Edge Function secrets in Supabase: `PADDLE_API_KEY`, `PADDLE_MONTHLY_PRICE_ID`, `PADDLE_YEARLY_PRICE_ID`, `PADDLE_ENVIRONMENT=sandbox`, and `PADDLE_WEBHOOK_SECRET`. Keep private API and webhook secrets out of `.env` and browser code.
-5. Deploy `create-paddle-checkout` with JWT verification enabled. Deploy `paddle-webhook` with JWT verification disabled; signature verification is performed inside the function.
-6. In Paddle Sandbox, create a notification destination pointing to `https://<project-ref>.supabase.co/functions/v1/paddle-webhook`. Subscribe to `subscription.created`, `subscription.updated`, `subscription.activated`, `subscription.trialing`, `subscription.past_due`, `subscription.paused`, and `subscription.canceled` events. Add the destination's secret as `PADDLE_WEBHOOK_SECRET`.
-
-Checkout runs in sandbox mode. Pro access is updated only by verified Paddle subscription webhooks. Webhook event IDs are recorded in the same database transaction as subscription changes, so Paddle retries are safe to process.
+Apply `supabase/migrations/20261123070000_remove_billing.sql` to remove the subscription table, Paddle webhook event table, and signup trigger. This deletes subscription data and keeps users and portfolios. If the Paddle Edge Functions or secrets were previously deployed, remove them from the Supabase Dashboard too; deleting local source files does not remove deployed functions or secrets.
