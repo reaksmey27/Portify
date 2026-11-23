@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowLeft, Eye, Plus, Save, Trash2 } from 'lucide-react'
+import { ArrowLeft, Copy, Eye, EyeOff, Globe, Plus, Save, Trash2 } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
@@ -92,6 +92,41 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
     }
   }
 
+  async function handlePublish() {
+    const status = portfolio.status === 'published' ? 'draft' : 'published'
+    setSaving(true)
+    setMessage('')
+    const content = {
+      name: form.name.trim(),
+      role: form.role.trim(),
+      email: form.email.trim(),
+      location: form.location.trim(),
+      website: form.website.trim(),
+      bio: form.bio,
+      skills: skillsText.split(',').map(skill => skill.trim()).filter(Boolean),
+      projects: form.projects,
+      experience: form.experience,
+    }
+    try {
+      await savePortfolio(portfolio.id, { title: form.title.trim(), template_id: selectedTemplate, content, status })
+      setMessage(status === 'published' ? 'Your portfolio is now published.' : 'Your portfolio is now unpublished.')
+    } catch (err) {
+      setMessage(err.message || 'Could not update publishing status.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleCopyLink() {
+    const url = `${window.location.origin}/p/${portfolio.slug}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setMessage('Portfolio link copied.')
+    } catch {
+      setMessage(`Copy this link: ${url}`)
+    }
+  }
+
   const skills = skillsText.split(',').map(skill => skill.trim()).filter(Boolean)
 
   return <div className="dashboard-layout editor-layout">
@@ -100,7 +135,7 @@ function PortfolioEditorForm({ portfolio, error, onBack, savePortfolio }) {
       <Header title="Portfolio editor" />
       <main className="dashboard-main editor-main">
         <button type="button" className="editor-back" onClick={onBack}><ArrowLeft size={15} /> Back to dashboard</button>
-        <div className="editor-page-heading"><div><div className="eyebrow">MAKE THIS SPACE YOURS</div><h2>Edit your portfolio</h2><p>Update your details and see the preview change as you work.</p></div><button form="portfolio-editor-form" type="submit" className="button button-dark editor-save" disabled={saving}><Save size={16} />{saving ? 'Saving…' : 'Save changes'}</button></div>
+        <div className="editor-page-heading"><div><div className="eyebrow">MAKE THIS SPACE YOURS</div><h2>Edit your portfolio</h2><p>Update your details and see the preview change as you work.</p></div><div className="editor-top-actions"><button type="button" className="button button-outline" onClick={handlePublish} disabled={saving}>{portfolio.status === 'published' ? <><EyeOff size={15} /> Unpublish</> : <><Globe size={15} /> Publish</>}</button>{portfolio.status === 'published' && <button type="button" className="button button-outline" onClick={handleCopyLink}><Copy size={15} /> Copy link</button>}<button form="portfolio-editor-form" type="submit" className="button button-dark editor-save" disabled={saving}><Save size={16} />{saving ? 'Saving…' : 'Save changes'}</button></div></div>
         {message && <div className={`editor-message ${message.includes('successfully') ? 'editor-message-success' : 'editor-message-error'}`} role="status">{message}</div>}
         {error && <div className="dashboard-error" role="alert">{error}</div>}
 
