@@ -69,6 +69,7 @@
 
 /* Keep dashboard navigation and header visible while the page scrolls. */
 .site-header{position:sticky;top:0;z-index:36;background:var(--paper);box-shadow:0 1px 0 var(--line)}
+.portfolio-template-header{position:sticky;top:0;z-index:20;background:inherit}
 .dashboard-layout{display:block}
 .dashboard-sidebar{position:fixed;inset:0 auto 0 0;width:228px;height:100vh;height:100dvh;z-index:35;overflow-y:auto}
 .dashboard-content{min-width:0;margin-left:228px}
