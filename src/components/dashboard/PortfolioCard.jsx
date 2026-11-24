@@ -32,7 +32,7 @@ export default function PortfolioCard({ portfolio, onDelete, deleting = false })
         <div className="portfolio-card-footer">
           <time dateTime={portfolio.updated_at}>{updatedDate}</time>
           <div className="portfolio-card-actions">
-            {isPublished && <a href={`/p/${portfolio.slug}`} target="_blank" rel="noreferrer" title="View portfolio" aria-label="View portfolio"><ExternalLink size={16} /></a>}
+            {isPublished && <a className="portfolio-view-site" href={`/p/${portfolio.slug}`} target="_blank" rel="noreferrer"><ExternalLink size={14} /> View site</a>}
             <Link to={`/dashboard/portfolios/${portfolio.id}/edit`} title="Edit portfolio" aria-label="Edit portfolio"><Pencil size={16} /></Link>
             <button type="button" onClick={() => onDelete(portfolio)} disabled={deleting} title="Delete portfolio" aria-label="Delete portfolio"><Trash2 size={16} /></button>
           </div>

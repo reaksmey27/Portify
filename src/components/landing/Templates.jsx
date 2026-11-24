@@ -1,9 +1,12 @@
 import { ArrowUpRight } from 'lucide-react'
 
 const templates = [
-  { name: 'The Editorial', kind: 'For the storytellers', color: 'editorial', initials: 'STUDIO', title: 'Stories worth\nstaying for.', foot: 'WORDS THAT MAKE YOU FEEL.' },
-  { name: 'The Artful', kind: 'For the visual thinkers', color: 'artful', initials: 'MIRA KIM', title: 'Color outside\nthe ordinary.', foot: 'ART DIRECTION · 2025' },
-  { name: 'The Minimalist', kind: 'For the big-picture people', color: 'minimalist', initials: 'NORTH®', title: 'Clear thinking.\nGood work.', foot: 'INDEPENDENT CREATIVE STUDIO' },
+  { name: 'Editorial', kind: 'For the storytellers', color: 'editorial', initials: 'STUDIO', title: 'Stories worth\nstaying for.', foot: 'WORDS THAT MAKE YOU FEEL.' },
+  { name: 'Studio', kind: 'For visual creators', color: 'studio', initials: 'MIRA KIM', title: 'Color outside\nthe ordinary.', foot: 'ART DIRECTION · 2026' },
+  { name: 'Minimal', kind: 'For the big-picture people', color: 'minimal', initials: 'NORTH®', title: 'Clear thinking.\nGood work.', foot: 'INDEPENDENT CREATIVE STUDIO' },
+  { name: 'Developer', kind: 'For builders and engineers', color: 'developer', initials: 'DEV / 01', title: 'Built with care.\nMade to work.', foot: 'CODE · SYSTEMS · PRODUCTS' },
+  { name: 'Creative', kind: 'For bold ideas', color: 'creative', initials: 'COLOR CLUB', title: 'Make room\nfor the unusual.', foot: 'INDEPENDENT CREATIVE' },
+  { name: 'Dark', kind: 'For a modern, focused look', color: 'dark', initials: 'AFTER HOURS', title: 'A little less\nordinary.', foot: 'DESIGN · DIGITAL · CULTURE' },
 ]
 
 export default function Templates() {

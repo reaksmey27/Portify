@@ -18,7 +18,7 @@ export default function PortfolioTemplate({ templateId = 'minimal', portfolio })
     projects: Array.isArray(content.projects) ? content.projects : [],
     experience: Array.isArray(content.experience) ? content.experience : [],
   }
-  const theme = ['minimal', 'dark', 'creative'].includes(templateId) ? templateId : 'minimal'
+  const theme = ['minimal', 'dark', 'creative', 'editorial', 'developer', 'studio'].includes(templateId) ? templateId : 'minimal'
 
   return <div className={`public-portfolio-template theme-${theme}`}>
     <header className="portfolio-template-header">
@@ -32,7 +32,7 @@ export default function PortfolioTemplate({ templateId = 'minimal', portfolio })
         <div className="template-hero-kicker"><span /> PORTFOLIO / {new Date().getFullYear()}</div>
         {data.avatar && <img className="template-avatar" src={data.avatar} alt={data.name} />}
         <p className="template-role" style={{ color: data.accentColor }}>{data.role}</p>
-        <h1>{theme === 'creative' ? <>Hello, I’m<br /><em>{data.name}.</em></> : <>I’m {data.name}<span className="template-period">.</span></>}</h1>
+        <h1>{['creative', 'editorial', 'studio'].includes(theme) ? <>Hello, I’m<br /><em>{data.name}.</em></> : <>I’m {data.name}<span className="template-period">.</span></>}</h1>
         <p className="template-bio">{data.bio}</p>
         <div className="template-hero-actions">
           {data.email && <a href={`mailto:${data.email}`} className="template-primary-action"><Mail size={15} /> Contact me</a>}

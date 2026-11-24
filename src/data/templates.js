@@ -20,4 +20,25 @@ export const templates = [
     category: 'Creative',
     accent: 'orange',
   },
+  {
+    id: 'editorial',
+    name: 'Editorial',
+    description: 'A refined, magazine-inspired layout for thoughtful work.',
+    category: 'Editorial',
+    accent: 'terracotta',
+  },
+  {
+    id: 'developer',
+    name: 'Developer',
+    description: 'A focused, high-contrast home for technical projects.',
+    category: 'Technology',
+    accent: 'green',
+  },
+  {
+    id: 'studio',
+    name: 'Studio',
+    description: 'A bold, image-forward layout for visual creators.',
+    category: 'Creative',
+    accent: 'pink',
+  },
 ]

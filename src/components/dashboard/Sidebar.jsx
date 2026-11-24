@@ -7,18 +7,34 @@ import { getMyProfile } from '../../services/profileService'
 export default function Sidebar() {
   const { user, signOut } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [avatar, setAvatar] = useState({ userId: null, url: '' })
+  const [avatar, setAvatar] = useState({ userId: null, url: '', fallbackUrl: '' })
 
   useEffect(() => {
     if (!user?.id) return undefined
     let active = true
+    const identity = user.identities?.find(item => item.provider === 'google')?.identity_data || {}
+    const authAvatar = [
+      user.user_metadata?.avatar_url,
+      user.user_metadata?.picture,
+      user.user_metadata?.photo_url,
+      identity.avatar_url,
+      identity.picture,
+    ].find(url => typeof url === 'string' && /^https?:\/\//i.test(url)) || ''
+    setAvatar({ userId: user.id, url: authAvatar, fallbackUrl: '' })
     const loadAvatar = () => {
       getMyProfile(user.id)
         .then(profile => {
-          if (active) setAvatar({ userId: user.id, url: profile?.avatar_url || '' })
+          if (!active) return
+          const profileAvatar = profile?.avatar_url
+          const validProfileAvatar = typeof profileAvatar === 'string' && /^https?:\/\//i.test(profileAvatar) ? profileAvatar : ''
+          setAvatar({
+            userId: user.id,
+            url: validProfileAvatar || authAvatar,
+            fallbackUrl: validProfileAvatar && authAvatar && validProfileAvatar !== authAvatar ? authAvatar : '',
+          })
         })
         .catch(() => {
-          if (active) setAvatar({ userId: user.id, url: '' })
+          if (active) setAvatar({ userId: user.id, url: authAvatar, fallbackUrl: '' })
         })
     }
     loadAvatar()
@@ -50,7 +66,7 @@ export default function Sidebar() {
         <NavLink to="/dashboard/notifications" onClick={closeDrawer}><Bell size={17} /> Notifications</NavLink>
         <NavLink to="/dashboard/settings" onClick={closeDrawer}><UserRound size={17} /> Account settings</NavLink>
       </nav>
-      <div className="sidebar-bottom"><div className="sidebar-user">{avatar.userId === user?.id && avatar.url ? <img className="user-avatar" src={avatar.url} alt="" onError={() => setAvatar({ userId: user.id, url: '' })} /> : <span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span>}<span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>
+      <div className="sidebar-bottom"><div className="sidebar-user">{avatar.userId === user?.id && avatar.url ? <img className="user-avatar" src={avatar.url} alt="" referrerPolicy="no-referrer" onError={() => setAvatar(current => current.fallbackUrl ? { ...current, url: current.fallbackUrl, fallbackUrl: '' } : { userId: user.id, url: '', fallbackUrl: '' })} /> : <span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span>}<span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>
     </aside>
   </>
 }
