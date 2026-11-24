@@ -61,7 +61,7 @@ export default function Sidebar() {
       <div className="workspace-label">WORKSPACE</div>
       <nav className="dashboard-nav" aria-label="Dashboard navigation">
         <NavLink to="/dashboard" end onClick={closeDrawer}><LayoutDashboard size={17} /> Overview</NavLink>
-        <a href="/dashboard#portfolios" onClick={closeDrawer}><BriefcaseBusiness size={17} /> My portfolios</a>
+        <NavLink to="/dashboard/portfolios" onClick={closeDrawer}><BriefcaseBusiness size={17} /> My portfolios</NavLink>
         <NavLink to="/dashboard/analytics" onClick={closeDrawer}><TrendingUp size={17} /> Analytics</NavLink>
         <NavLink to="/dashboard/notifications" onClick={closeDrawer}><Bell size={17} /> Notifications</NavLink>
         <NavLink to="/dashboard/settings" onClick={closeDrawer}><UserRound size={17} /> Account settings</NavLink>

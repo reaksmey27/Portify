@@ -132,3 +132,18 @@
 .template-preview.editorial .template-title,.template-preview.developer .template-title,.template-preview.dark .template-title{color:inherit}
 .portfolio-card-actions .portfolio-view-site{width:auto;padding:0 9px;display:flex;align-items:center;gap:5px;border:1px solid #e5e1d8;background:#fff;border-radius:5px;color:#68665d;font-size:8px;font-weight:700;white-space:nowrap}
 .portfolio-card-actions .portfolio-view-site:hover{background:#f3eef8;border-color:#d8c9e3;color:#8050a0}
+.overview-manage-link{min-height:36px;margin-top:15px;padding:0 12px;font-size:9px;gap:8px}
+.overview-next-step{display:flex;align-items:center;gap:13px;margin-top:20px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:7px}
+.overview-next-step-icon{height:37px;width:37px;flex:none;display:grid;place-items:center;border-radius:9px;background:#f2e9f2;color:#8f62a0}
+.overview-next-step>div:nth-child(2){flex:1}
+.overview-next-step h3{margin:0 0 4px;font:600 11px Manrope,sans-serif}
+.overview-next-step p{margin:0;color:#85837b;font-size:9px;line-height:1.5}
+.overview-next-step>a{display:inline-flex;align-items:center;gap:6px;color:#8050a0;font-size:9px;font-weight:700;white-space:nowrap}
+.overview-next-step>a:hover{text-decoration:underline}
+.my-portfolios-main{padding-top:27px}
+.my-portfolios-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:30px;padding:24px 26px;background:#ecebe2;border-radius:7px}
+.my-portfolios-intro h2{margin:9px 0 6px;font:600 22px Manrope,sans-serif;letter-spacing:-1px}
+.my-portfolios-intro p{max-width:470px;margin:0;color:#77766e;font-size:10px;line-height:1.7}
+.my-portfolios-intro>.button{min-height:39px;flex:none;font-size:9px}
+.my-portfolios-list .dashboard-section-heading{margin-bottom:17px}
+@media(max-width:640px){.overview-next-step{align-items:flex-start;flex-wrap:wrap;padding:14px}.overview-next-step>div:nth-child(2){flex-basis:calc(100% - 52px)}.overview-next-step>a{margin-left:50px}.my-portfolios-main{padding-top:19px}.my-portfolios-intro{align-items:flex-start;flex-direction:column;padding:19px;margin-bottom:24px}.my-portfolios-intro h2{font-size:19px}.my-portfolios-intro>.button{min-height:36px}}

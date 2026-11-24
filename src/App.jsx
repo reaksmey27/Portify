@@ -6,6 +6,7 @@ const Landing = lazy(() => import('./pages/Landing'))
 const Login = lazy(() => import('./pages/Login'))
 const Register = lazy(() => import('./pages/Register'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
+const MyPortfolios = lazy(() => import('./pages/MyPortfolios'))
 const PortfolioEditor = lazy(() => import('./pages/PortfolioEditor'))
 const PublicPortfolio = lazy(() => import('./pages/PublicPortfolio'))
 const Analytics = lazy(() => import('./pages/Analytics'))
@@ -14,7 +15,7 @@ const Notifications = lazy(() => import('./pages/Notifications'))
 
 function App() {
   const fallback = <div className="auth-loading">Loading Portify…</div>
-  return <BrowserRouter><AuthProvider><Routes><Route path="/" element={<Suspense fallback={fallback}><Landing /></Suspense>} /><Route path="/login" element={<Suspense fallback={fallback}><Login /></Suspense>} /><Route path="/register" element={<Suspense fallback={fallback}><Register /></Suspense>} /><Route path="/dashboard" element={<Suspense fallback={fallback}><Dashboard /></Suspense>} /><Route path="/dashboard/analytics" element={<Suspense fallback={<div className="auth-loading">Loading analytics page…</div>}><Analytics /></Suspense>} /><Route path="/dashboard/settings" element={<Suspense fallback={fallback}><AccountSettings /></Suspense>} /><Route path="/dashboard/notifications" element={<Suspense fallback={fallback}><Notifications /></Suspense>} /><Route path="/dashboard/portfolios/:id/edit" element={<Suspense fallback={fallback}><PortfolioEditor /></Suspense>} /><Route path="/p/:slug" element={<Suspense fallback={fallback}><PublicPortfolio /></Suspense>} /></Routes></AuthProvider></BrowserRouter>
+  return <BrowserRouter><AuthProvider><Routes><Route path="/" element={<Suspense fallback={fallback}><Landing /></Suspense>} /><Route path="/login" element={<Suspense fallback={fallback}><Login /></Suspense>} /><Route path="/register" element={<Suspense fallback={fallback}><Register /></Suspense>} /><Route path="/dashboard" element={<Suspense fallback={fallback}><Dashboard /></Suspense>} /><Route path="/dashboard/portfolios" element={<Suspense fallback={fallback}><MyPortfolios /></Suspense>} /><Route path="/dashboard/analytics" element={<Suspense fallback={<div className="auth-loading">Loading analytics page…</div>}><Analytics /></Suspense>} /><Route path="/dashboard/settings" element={<Suspense fallback={fallback}><AccountSettings /></Suspense>} /><Route path="/dashboard/notifications" element={<Suspense fallback={fallback}><Notifications /></Suspense>} /><Route path="/dashboard/portfolios/:id/edit" element={<Suspense fallback={fallback}><PortfolioEditor /></Suspense>} /><Route path="/p/:slug" element={<Suspense fallback={fallback}><PublicPortfolio /></Suspense>} /></Routes></AuthProvider></BrowserRouter>
 }
 
 export default App
