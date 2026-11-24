@@ -1,4 +1,4 @@
-import { ArrowLeft, BriefcaseBusiness, ExternalLink, FileText, Globe, MoveRight, Sparkles } from 'lucide-react'
+import { BriefcaseBusiness, ExternalLink, FileText, Globe, MoveRight, Sparkles } from 'lucide-react'
 import { Link, Navigate } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
@@ -27,7 +27,6 @@ export default function Dashboard() {
               <h2>Good to see you again.</h2>
               <p>Your workspace at a glance. Manage your portfolio sites from My portfolios.</p>
               <div className="overview-actions">
-                <Link className="button button-outline overview-view-site" to="/"><ArrowLeft size={14} /> Back to website</Link>
                 <Link className="button button-dark overview-manage-link" to="/dashboard/portfolios">Manage portfolios <MoveRight size={15} /></Link>
                 {featuredSite
                   ? <a className="button button-outline overview-view-site" href={`/p/${featuredSite.slug}`} target="_blank" rel="noreferrer">View client site <ExternalLink size={14} /></a>

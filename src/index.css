@@ -157,7 +157,13 @@
 .nav-notification-item button:hover{background:#edf3e9}
 .sidebar-home-link{display:flex;align-items:center;gap:9px;margin:16px 8px 0;padding-top:13px;border-top:1px solid var(--line);color:#8a887e;font-size:10px}
 .sidebar-home-link:hover{color:var(--accent)}
-@media(max-width:640px){.site-header .nav-actions{display:flex;gap:10px}.site-header .nav-actions .sign-in{font-size:9px}.site-header .nav-actions .button-small{min-height:34px;padding:0 9px;font-size:9px}.site-header .mobile-menu{display:none}}
+@media(max-width:640px){.site-header .nav-actions{display:flex;gap:10px}.site-header .nav-actions .sign-in{font-size:9px}.site-header .nav-actions .button-small{min-height:34px;padding:0 9px;font-size:9px}.site-header .mobile-menu{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:5px;cursor:pointer}}
+.site-header{position:fixed;z-index:60}
+.mobile-nav-panel{display:none}
+@media(max-width:760px){.site-header .main-nav{display:none}.site-header .mobile-menu{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--line);border-radius:5px;cursor:pointer}.mobile-nav-panel{position:absolute;top:calc(100% - 1px);left:12px;right:12px;z-index:40;padding:7px;border:1px solid var(--line);border-radius:7px;background:#fff;box-shadow:0 14px 32px #2421161c}.mobile-nav-panel-open{display:grid}.mobile-nav-panel a{padding:12px 11px;border-radius:4px;color:#65645c;font-size:11px;font-weight:600}.mobile-nav-panel a:hover{background:#f4f2ec;color:var(--accent)}}
+@media(max-width:760px){.template-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.template-card:nth-child(n+2){display:block}.dashboard-card-grid>*:last-child{display:block}}
+@media(max-width:480px){.template-choice-grid{grid-template-columns:1fr}}
 .overview-next-step{display:flex;align-items:center;gap:13px;margin-top:20px;padding:17px;background:#fff;border:1px solid var(--line);border-radius:7px}
 .overview-next-step-icon{height:37px;width:37px;flex:none;display:grid;place-items:center;border-radius:9px;background:#f2e9f2;color:#8f62a0}
 .overview-next-step>div:nth-child(2){flex:1}

@@ -1,4 +1,4 @@
-import { ArrowUpRight, Bell, Check, Menu } from 'lucide-react'
+import { ArrowUpRight, Bell, Check, Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import StartBuildingLink from '../auth/StartBuildingLink'
@@ -12,7 +12,9 @@ export default function Navbar() {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [notifications, setNotifications] = useState([])
   const [notificationsLoading, setNotificationsLoading] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const notificationRef = useRef(null)
+  const mobileMenuRef = useRef(null)
   const avatar = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || ''
   const name = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email || 'Profile'
 
@@ -41,6 +43,19 @@ export default function Navbar() {
     }
   }, [notificationsOpen])
 
+  useEffect(() => {
+    if (!mobileOpen) return undefined
+    const closeMenu = event => {
+      if (event.key === 'Escape' || !mobileMenuRef.current?.contains(event.target)) setMobileOpen(false)
+    }
+    document.addEventListener('pointerdown', closeMenu)
+    document.addEventListener('keydown', closeMenu)
+    return () => {
+      document.removeEventListener('pointerdown', closeMenu)
+      document.removeEventListener('keydown', closeMenu)
+    }
+  }, [mobileOpen])
+
   async function handleMarkRead(id) {
     try {
       await markNotificationRead(user.id, id)
@@ -51,7 +66,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="site-header">
+    <header className="site-header" ref={mobileMenuRef}>
       <a className="brand" href="#top" aria-label="Portify home"><span className="brand-mark">p</span>portify</a>
       <nav className="main-nav" aria-label="Main navigation">
         <a href="#features">Features</a><a href="#templates">Templates</a><a href="#how-it-works">How it works</a><a href="#pricing">Free forever</a>
@@ -62,7 +77,13 @@ export default function Navbar() {
             <span>Profile</span>
           </Link></>
         : <><Link className="sign-in" to="/login">Sign in</Link><StartBuildingLink className="button button-dark button-small">Get started <ArrowUpRight size={15} /></StartBuildingLink></>)}</div>
-      <button className="mobile-menu" aria-label="Open menu"><Menu size={22} /></button>
+      <button type="button" className="mobile-menu" aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} aria-controls="mobile-site-navigation" onClick={() => setMobileOpen(open => !open)}>{mobileOpen ? <X size={20} /> : <Menu size={22} />}</button>
+      <nav className={`mobile-nav-panel ${mobileOpen ? 'mobile-nav-panel-open' : ''}`} id="mobile-site-navigation" aria-label="Mobile navigation" aria-hidden={!mobileOpen}>
+        <a href="#features" onClick={() => setMobileOpen(false)}>Features</a>
+        <a href="#templates" onClick={() => setMobileOpen(false)}>Templates</a>
+        <a href="#how-it-works" onClick={() => setMobileOpen(false)}>How it works</a>
+        <a href="#pricing" onClick={() => setMobileOpen(false)}>Free forever</a>
+      </nav>
     </header>
   )
 }
