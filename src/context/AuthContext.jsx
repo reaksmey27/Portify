@@ -32,11 +32,11 @@ export function AuthProvider({ children }) {
       if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) to the environment first.')
       return supabase.auth.signUp({ email, password })
     },
-    signInWithOAuth: async provider => {
+    signInWithOAuth: async (provider, redirectPath = '/dashboard') => {
       if (!supabase) throw new Error('Add VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY (or VITE_SUPABASE_ANON_KEY) to the environment first.')
       return supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${window.location.origin}/dashboard` },
+        options: { redirectTo: `${window.location.origin}${redirectPath}` },
       })
     },
     signOut: async () => supabase?.auth.signOut(),

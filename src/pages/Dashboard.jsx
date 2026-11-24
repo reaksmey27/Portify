@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, FileText, Globe, MoveRight, Sparkles } from 'lucide-react'
+import { ArrowLeft, BriefcaseBusiness, ExternalLink, FileText, Globe, MoveRight, Sparkles } from 'lucide-react'
 import { Link, Navigate } from 'react-router-dom'
 import Header from '../components/dashboard/Header'
 import Sidebar from '../components/dashboard/Sidebar'
@@ -8,7 +8,9 @@ import { usePortfolios } from '../hooks/usePortfolios'
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth()
   const { portfolios, loading, error } = usePortfolios()
-  const publishedCount = portfolios.filter(portfolio => portfolio.status === 'published').length
+  const publishedPortfolios = portfolios.filter(portfolio => portfolio.status === 'published')
+  const publishedCount = publishedPortfolios.length
+  const featuredSite = publishedPortfolios[0]
 
   if (authLoading) return <div className="auth-loading">Getting your workspace ready…</div>
   if (!user) return <Navigate to="/login" replace />
@@ -24,7 +26,13 @@ export default function Dashboard() {
               <div className="eyebrow">YOUR CREATIVE CORNER</div>
               <h2>Good to see you again.</h2>
               <p>Your workspace at a glance. Manage your portfolio sites from My portfolios.</p>
-              <Link className="button button-dark overview-manage-link" to="/dashboard/portfolios">Manage portfolios <MoveRight size={15} /></Link>
+              <div className="overview-actions">
+                <Link className="button button-outline overview-view-site" to="/"><ArrowLeft size={14} /> Back to website</Link>
+                <Link className="button button-dark overview-manage-link" to="/dashboard/portfolios">Manage portfolios <MoveRight size={15} /></Link>
+                {featuredSite
+                  ? <a className="button button-outline overview-view-site" href={`/p/${featuredSite.slug}`} target="_blank" rel="noreferrer">View client site <ExternalLink size={14} /></a>
+                  : <Link className="button button-outline overview-view-site" to="/dashboard/portfolios">{loading ? 'Loading site…' : 'Publish to view site'} <ExternalLink size={14} /></Link>}
+              </div>
             </div>
             <span className="welcome-sparkle"><Sparkles size={29} /></span>
           </section>

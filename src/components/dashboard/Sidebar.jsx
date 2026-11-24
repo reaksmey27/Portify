@@ -1,6 +1,6 @@
-import { Bell, BriefcaseBusiness, LayoutDashboard, LogOut, TrendingUp, UserRound } from 'lucide-react'
+import { ArrowLeft, Bell, BriefcaseBusiness, LayoutDashboard, LogOut, TrendingUp, UserRound } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth'
 import { getMyProfile } from '../../services/profileService'
 
@@ -66,6 +66,7 @@ export default function Sidebar() {
         <NavLink to="/dashboard/notifications" onClick={closeDrawer}><Bell size={17} /> Notifications</NavLink>
         <NavLink to="/dashboard/settings" onClick={closeDrawer}><UserRound size={17} /> Account settings</NavLink>
       </nav>
+      <Link to="/" className="sidebar-home-link" onClick={closeDrawer}><ArrowLeft size={16} /> Back to website</Link>
       <div className="sidebar-bottom"><div className="sidebar-user">{avatar.userId === user?.id && avatar.url ? <img className="user-avatar" src={avatar.url} alt="" referrerPolicy="no-referrer" onError={() => setAvatar(current => current.fallbackUrl ? { ...current, url: current.fallbackUrl, fallbackUrl: '' } : { userId: user.id, url: '', fallbackUrl: '' })} /> : <span className="user-avatar">{user?.email?.[0]?.toUpperCase() ?? 'U'}</span>}<span className="user-email">{user?.email ?? 'Your account'}</span><button aria-label="Sign out" onClick={handleSignOut}><LogOut size={16} /></button></div></div>
     </aside>
   </>

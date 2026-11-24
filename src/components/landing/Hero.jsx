@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight, Check, Sparkles } from 'lucide-react'
+import StartBuildingLink from '../auth/StartBuildingLink'
 
 export default function Hero() {
   return (
@@ -7,7 +8,7 @@ export default function Hero() {
         <div className="eyebrow"><span className="eyebrow-dot" /> YOUR WORK, BEAUTIFULLY YOURS</div>
         <h1>Your next opportunity<br />starts with <span>your story.</span></h1>
         <p className="hero-lede">A portfolio that feels like you. Bring your best work together and make the kind of first impression that opens doors.</p>
-        <div className="hero-actions"><a className="button button-dark" href="#pricing">Build your portfolio <ArrowRight size={17} /></a><a className="text-link" href="#templates">Explore templates <ArrowDown size={15} /></a></div>
+        <div className="hero-actions"><StartBuildingLink className="button button-dark">Build your portfolio <ArrowRight size={17} /></StartBuildingLink><a className="text-link" href="#templates">Explore templates <ArrowDown size={15} /></a></div>
         <div className="social-proof"><div className="avatar-stack"><span>J</span><span>M</span><span>A</span><span>K</span></div><div><strong>Loved by 12,000+ creatives</strong><small>Designers, makers, and dreamers</small></div></div>
       </div>
       <div className="hero-visual" aria-label="Example creative portfolio preview">

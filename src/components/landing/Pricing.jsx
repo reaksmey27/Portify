@@ -1,4 +1,5 @@
 import { ArrowRight, Check } from 'lucide-react'
+import StartBuildingLink from '../auth/StartBuildingLink'
 
 const features = [
   'Unlimited portfolio creation',
@@ -15,7 +16,7 @@ export default function Pricing() {
     <div className="pricing-heading"><div className="eyebrow">EVERYTHING INCLUDED</div><h2>Free, <span>forever.</span></h2><p>Build, publish, and grow your portfolio. No payment required.</p></div>
     <div className="pricing-grid free-plan-grid"><article className="price-card price-card-featured">
       <div className="plan-name">Portify</div><div className="plan-price">$0<small>forever</small></div><p className="plan-description">A complete portfolio builder, open to everyone.</p>
-      <a href="/register" className="button button-dark">Start building <ArrowRight size={15} /></a>
+      <StartBuildingLink className="button button-dark">Start building <ArrowRight size={15} /></StartBuildingLink>
       <div className="plan-divider" /><div className="includes-label">EVERYTHING IS INCLUDED</div>
       <ul>{features.map(feature => <li key={feature}><Check size={15} />{feature}</li>)}</ul>
     </article></div>

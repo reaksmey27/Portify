@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../context/useAuth'
 
 function GoogleMark() {
@@ -11,6 +12,7 @@ function GitHubMark() {
 
 export default function SocialAuthButtons() {
   const { signInWithOAuth } = useAuth()
+  const [searchParams] = useSearchParams()
   const [busyProvider, setBusyProvider] = useState('')
   const [error, setError] = useState('')
 
@@ -18,7 +20,9 @@ export default function SocialAuthButtons() {
     setError('')
     setBusyProvider(provider)
     try {
-      const { error: authError } = await signInWithOAuth(provider)
+      const requestedPath = searchParams.get('next')
+      const redirectPath = requestedPath?.startsWith('/dashboard') ? requestedPath : '/dashboard'
+      const { error: authError } = await signInWithOAuth(provider, redirectPath)
       if (authError) setError(authError.message)
     } catch (authError) {
       setError(authError.message || 'Could not start sign-in.')
